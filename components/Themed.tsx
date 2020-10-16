@@ -1,8 +1,13 @@
 import * as React from 'react';
-import { Text as DefaultText, View as DefaultView } from 'react-native';
+import { Text as DefaultText, 
+         View as DefaultView, 
+         ImageBackground as DefaultImageBackground, 
+         SafeAreaView,
+        } from 'react-native'
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
+
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -39,3 +44,5 @@ export function View(props: ViewProps) {
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
+
+
