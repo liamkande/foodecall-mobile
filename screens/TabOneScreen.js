@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {View, Image, Text, StyleSheet } from 'react-native'
+import {View, Image, Text, TextInput, ScrollView, StyleSheet } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import ImgBgView from '../components/imgBgView'
 import MainBtn from '../components/mainBtn'
@@ -10,6 +10,10 @@ const logo = require('../assets/images/logoCircle.png')
 export default function TabOneScreen() {
   const [showModal, setShowModal] = React.useState(false)
   const [modalType, setModalType] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [inputBg, setInputBg] = React.useState('red')
+  
 
   
   const handleSignUp = async () => {
@@ -38,14 +42,52 @@ export default function TabOneScreen() {
           <MainBtn onPress={handleSignUp} bgColor='#FF4F6B' txtColor='white' title='Get Started'/>
           <MainBtn onPress={handleSignIn}  bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
           </View>
-          <ModalView width={'100%'} showModal={showModal} type={modalType}>
+          <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
             { modalType == 'signUp' &&
-            <View>
-              <MainBtn onPress={() => setShowModal(!showModal)} bgColor='#4A9D64' txtColor='white' title='DONE'/>
+            <View style={{justifyContent:'center',}}>
+              <Image style={styles.miniLogo} source={logo} />
+              <Text style={styles.modalTxt}>Create an account below:</Text>
+
+              <ScrollView style={{width:'83%', alignSelf:'center'}}>
+                <Text style={styles.inputTitle}>Email:</Text>
+              <TextInput 
+                style={styles.input}
+                autoCompleteType='email'
+                autoFocus={true}
+                keyboardType='email-address'
+                onBlur={() => setInputBg('green')}
+                value={email}
+                onChangeText={input => setEmail(input)}
+                placeholderTextColor='#8E8F95'
+                placeholder='Enter your email'
+              />
+              <Text style={styles.inputTitle}>Password:</Text>
+              <TextInput 
+                style={styles.input}
+                autoCompleteType='password'
+                secureTextEntry={true}
+                value={password}
+                onChangeText={input => setPassword(input)}
+                placeholderTextColor='#8E8F95'
+                placeholder='At least 6 characters'
+              />
+                
+              <MainBtn onPress={() => setShowModal(!showModal)} bgColor='#4A9D64' txtColor='white' title='DONE' spaceTop={40} />
+
+              </ScrollView>
             </View>
             }
             { modalType == 'signIn' &&
+            <View>
+              <TextInput 
+                style={styles.input}
+                value={email}
+                onChangeText={input => setEmail(input)}
+                placeholderTextColor='#707070'
+                placeholder='Email'
+              />
               <MainBtn onPress={() => setShowModal(!showModal)} bgColor='white' txtColor='#FF4F6B' title='Sign In'/>
+            </View>
             }
           </ModalView>
       </ImgBgView>
@@ -60,6 +102,12 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: '5%'
   },
+  miniLogo: {
+    width: 80,
+    height: 80,
+    alignSelf: 'center',
+    marginTop: '5%'
+  },
   txt: {
     color: 'white',
     alignSelf: 'center',
@@ -71,6 +119,31 @@ const styles = StyleSheet.create({
       height: 3,
       width: 6
     },
+  },
+  modalTxt: {
+    color: 'white',
+    alignSelf: 'center',
+    fontSize: 26,
+    fontWeight:'bold', 
+    },
+  inputTitle: {
+    color:'white',
+    fontSize: 24,
+    marginTop:'5%',
+  },
+
+  input: {
+    alignSelf: 'center',
+    width: '100%',
+    color: '#312F2F',
+    fontSize: 24,
+    height:50,
+    borderColor: 'white',
+    backgroundColor:'#EDEEEF',
+    borderWidth: 2,
+    textAlign: 'center',
+    borderRadius:6,
+    fontWeight: 'bold',
   },
 })
 

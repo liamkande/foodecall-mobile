@@ -1,9 +1,9 @@
 import React from 'react'
-import { View, Modal, SafeAreaView, StyleSheet } from 'react-native'
+import { View, Modal, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import MainBtn from '../mainBtn'
 
 export default function ModalView(props) {
-    const {type, showModal, ...otherProps } = props
+    const {type, showModal, modalWidth, innerHeight, ...otherProps } = props
     const mainImg = require('../../assets/images/mainBg.png') 
     const originalImg = require('../../assets/images/originalBg.png')
     const [bgImg, setBgImg] = React.useState( type == 'main' ? mainImg : 
@@ -11,25 +11,23 @@ export default function ModalView(props) {
                                               null) 
     return (
       <Modal animationType='slide' transparent visible={showModal}>
-        <View style={styles.container} >
-          <SafeAreaView style={styles.innerContainer} {...otherProps}/>
+        <View style={[styles.modal, {width:modalWidth,}]} >
+          <SafeAreaView style={[styles.innerModal, {height:innerHeight}]} {...otherProps}/>
           
-         
+
+          
         </View >
       </Modal>
       )
   }
   
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'flex-end',
-   
+    modal: {
+      flex: 1,  
+      alignSelf:'center',
     },
-    innerContainer: {
-     backgroundColor: '#312F2F',
-     height:'56%'
-
+    innerModal: {
+      backgroundColor:'#312F2F', 
     },
     bgImg: {
       width: '100%',
