@@ -3,11 +3,11 @@ import { View, ImageBackground, SafeAreaView, StyleSheet } from 'react-native'
 
 
 export default function ImgBgView(props) {
-    const {main, original, ...otherProps } = props
+    const {type, ...otherProps } = props
     const mainImg = require('../../assets/images/mainBg.png') 
     const originalImg = require('../../assets/images/originalBg.png')
-    const [bgImg, setBgImg] = React.useState( main ? mainImg : 
-                                              original ? originalImg : 
+    const [bgImg, setBgImg] = React.useState( type == 'main' ? mainImg : 
+                                              type == 'original' ? originalImg : 
                                               null) 
     return (
       <View style={styles.container}  >

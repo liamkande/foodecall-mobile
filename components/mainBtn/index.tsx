@@ -15,13 +15,13 @@ const styles = StyleSheet.create({
     mainBtn: {
         alignSelf:'center',
         justifyContent: 'center', 
+        width:'80%',
         shadowColor: "black",
         shadowOpacity: 0.1,
         shadowOffset: {
           height: 3,
           width: 6
         },
-        width:'80%',
         height:60,
         borderRadius:25
       },
