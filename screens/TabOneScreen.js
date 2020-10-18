@@ -77,7 +77,6 @@ export default function TabOneScreen() {
             { modalType == 'signIn' &&
             <View style={{justifyContent:'center',}}>
             <Image style={styles.miniLogo} source={logo} />
-            <Text style={styles.modalTxt}>Create an account below:</Text>
             <ScrollView style={{width:'83%', alignSelf:'center'}}>
               <Text style={styles.inputTitle}>Email:</Text>
             <TextInput 
@@ -99,7 +98,7 @@ export default function TabOneScreen() {
               value={password}
               onChangeText={input => setPassword(input)}
               placeholderTextColor='#8E8F95'
-              placeholder='••••••••'
+              placeholder='•••••••'
             />
             <MainBtn onPress={() => setShowModal(!showModal)} bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
             </ScrollView>
