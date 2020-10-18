@@ -42,12 +42,12 @@ export default function TabOneScreen() {
           <MainBtn onPress={handleSignUp} bgColor='#FF4F6B' txtColor='white' title='Get Started'/>
           <MainBtn onPress={handleSignIn}  bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
           </View>
-          <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
+          <ModalView  modalWidth='100%' innerHeight='110%' showModal={showModal} type={modalType}>
             { modalType == 'signUp' &&
             <View style={{justifyContent:'center',}}>
               <Image style={styles.miniLogo} source={logo} />
               <Text style={styles.modalTxt}>Create an account below:</Text>
-              <ScrollView style={{width:'83%', alignSelf:'center'}}>
+              <ScrollView style={{width:'80%', height:'100%', alignSelf:'center'}}>
                 <Text style={styles.inputTitle}>Email:</Text>
               <TextInput 
                 style={styles.input}
@@ -77,7 +77,7 @@ export default function TabOneScreen() {
             { modalType == 'signIn' &&
             <View style={{justifyContent:'center',}}>
             <Image style={styles.miniLogo} source={logo} />
-            <ScrollView style={{width:'83%', alignSelf:'center'}}>
+            <ScrollView style={{width:'80%', height:'100%', alignSelf:'center'}}>
               <Text style={styles.inputTitle}>Email:</Text>
             <TextInput 
               style={styles.input}
@@ -138,15 +138,14 @@ const styles = StyleSheet.create({
   modalTxt: {
     color: 'white',
     alignSelf: 'center',
-    fontSize: 26,
+    fontSize: 24,
     fontWeight:'bold', 
     },
   inputTitle: {
     color:'white',
-    fontSize: 24,
+    fontSize: 21,
     marginTop:'5%',
   },
-
   input: {
     alignSelf: 'center',
     width: '100%',

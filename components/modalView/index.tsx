@@ -7,9 +7,9 @@ export default function ModalView(props) {
  
     return (
       <Modal animationType='slide' transparent visible={showModal}>
-        <View style={[styles.modal, {width:modalWidth,}]} >
-          <SafeAreaView style={[styles.innerModal, {height:innerHeight}]} {...otherProps}/>                
-        </View >
+        <SafeAreaView style={[styles.modal, {width:modalWidth,}]} >
+          <View style={[styles.innerModal, {height:innerHeight}]} {...otherProps}/>                
+        </SafeAreaView >
       </Modal>
       )
   }
@@ -18,11 +18,13 @@ export default function ModalView(props) {
     modal: {
       flex: 1,  
       alignSelf:'center',
+      
     },
     innerModal: {
       backgroundColor:'#312F2F', 
-      borderRadius:25,
-      marginTop:'10%'
+      borderTopRightRadius:25,
+      borderTopLeftRadius:25,
+     
     },
 
   })
