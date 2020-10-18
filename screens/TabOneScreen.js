@@ -47,7 +47,6 @@ export default function TabOneScreen() {
             <View style={{justifyContent:'center',}}>
               <Image style={styles.miniLogo} source={logo} />
               <Text style={styles.modalTxt}>Create an account below:</Text>
-
               <ScrollView style={{width:'83%', alignSelf:'center'}}>
                 <Text style={styles.inputTitle}>Email:</Text>
               <TextInput 
@@ -71,23 +70,40 @@ export default function TabOneScreen() {
                 placeholderTextColor='#8E8F95'
                 placeholder='At least 6 characters'
               />
-                
               <MainBtn onPress={() => setShowModal(!showModal)} bgColor='#4A9D64' txtColor='white' title='DONE' spaceTop={40} />
-
               </ScrollView>
             </View>
             }
             { modalType == 'signIn' &&
-            <View>
-              <TextInput 
-                style={styles.input}
-                value={email}
-                onChangeText={input => setEmail(input)}
-                placeholderTextColor='#707070'
-                placeholder='Email'
-              />
-              <MainBtn onPress={() => setShowModal(!showModal)} bgColor='white' txtColor='#FF4F6B' title='Sign In'/>
-            </View>
+            <View style={{justifyContent:'center',}}>
+            <Image style={styles.miniLogo} source={logo} />
+            <Text style={styles.modalTxt}>Create an account below:</Text>
+            <ScrollView style={{width:'83%', alignSelf:'center'}}>
+              <Text style={styles.inputTitle}>Email:</Text>
+            <TextInput 
+              style={styles.input}
+              autoCompleteType='email'
+              autoFocus={true}
+              keyboardType='email-address'
+              onBlur={() => setInputBg('green')}
+              value={email}
+              onChangeText={input => setEmail(input)}
+              placeholderTextColor='#8E8F95'
+              placeholder='Email'
+            />
+            <Text style={styles.inputTitle}>Password:</Text>
+            <TextInput 
+              style={styles.input}
+              autoCompleteType='password'
+              secureTextEntry={true}
+              value={password}
+              onChangeText={input => setPassword(input)}
+              placeholderTextColor='#8E8F95'
+              placeholder='••••••••'
+            />
+            <MainBtn onPress={() => setShowModal(!showModal)} bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
+            </ScrollView>
+          </View>
             }
           </ModalView>
       </ImgBgView>
@@ -136,10 +152,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
     color: '#312F2F',
-    fontSize: 24,
+    fontSize: 18,
     height:50,
     borderColor: 'white',
-    backgroundColor:'#EDEEEF',
+    backgroundColor:'#EDEEEF', 
     borderWidth: 2,
     textAlign: 'center',
     borderRadius:6,
