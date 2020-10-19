@@ -3,6 +3,7 @@ import { View, Modal, SafeAreaView, StyleSheet } from 'react-native'
 
 
 export default function ModalView(props) {
+  
     const {type, showModal, modalWidth, innerHeight, ...otherProps } = props
  
     return (
@@ -18,15 +19,11 @@ export default function ModalView(props) {
     modal: {
       flex: 1,  
       alignSelf:'center',
-      
     },
     innerModal: {
       backgroundColor:'#312F2F', 
-      borderTopRightRadius:25,
-      borderTopLeftRadius:25,
-     
+      borderRadius:25,
     },
-
   })
 
  

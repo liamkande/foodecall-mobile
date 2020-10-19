@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {View, Image, Text, TextInput, ScrollView, StyleSheet } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import ImgBgView from '../components/imgBgView'
+import MainView from '../components/mainView'
 import MainBtn from '../components/mainBtn'
 import ModalView from '../components/modalView'
 
@@ -27,7 +27,7 @@ export default function TabOneScreen() {
   }
 
   return (
-      <ImgBgView type='main'>
+      <MainView>
         <View style={{height:'70%'}}>
           <Image style={styles.logo} source={logo} />
           <Text style={styles.txt}>The food delivery app, designed</Text>
@@ -42,7 +42,7 @@ export default function TabOneScreen() {
           <MainBtn onPress={handleSignUp} bgColor='#FF4F6B' txtColor='white' title='Get Started'/>
           <MainBtn onPress={handleSignIn}  bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
           </View>
-          <ModalView  modalWidth='100%' innerHeight='110%' showModal={showModal} type={modalType}>
+          <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
             { modalType == 'signUp' &&
             <View style={{justifyContent:'center',}}>
               <Image style={styles.miniLogo} source={logo} />
@@ -105,7 +105,7 @@ export default function TabOneScreen() {
           </View>
             }
           </ModalView>
-      </ImgBgView>
+      </MainView>
   )
 }
 
