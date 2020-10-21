@@ -1,5 +1,6 @@
+import * as WebBrowser from 'expo-web-browser'
 import * as React from 'react'
-import {View, Image, Text, TextInput, ScrollView, StyleSheet } from 'react-native'
+import {View, Image, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import MainView from '../components/mainView'
 import MainBtn from '../components/mainBtn'
@@ -12,15 +13,11 @@ export default function TabOneScreen() {
   const [modalType, setModalType] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
-  const [inputBg, setInputBg] = React.useState('red')
-  
-
   
   const handleSignUp = async () => {
     setModalType('signUp')
     setShowModal(true)
   }
-
   const handleSignIn = async () => {
     setModalType('signIn')
     setShowModal(true)
@@ -45,21 +42,28 @@ export default function TabOneScreen() {
           <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
             { modalType == 'signUp' &&
             <View style={{justifyContent:'center',}}>
+              <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(!showModal)}>
+                <FontAwesome
+                  name='close'
+                  color='#F92B8C'
+                  style={{alignSelf:'center'}}
+                  size={40}
+                />
+              </TouchableOpacity>
               <Image style={styles.miniLogo} source={logo} />
               <Text style={styles.modalTxt}>Create an account below:</Text>
               <ScrollView style={{width:'80%', height:'100%', alignSelf:'center'}}>
                 <Text style={styles.inputTitle}>Email:</Text>
-              <TextInput 
-                style={styles.input}
-                autoCompleteType='email'
-                autoFocus={true}
-                keyboardType='email-address'
-                onBlur={() => setInputBg('green')}
-                value={email}
-                onChangeText={input => setEmail(input)}
-                placeholderTextColor='#8E8F95'
-                placeholder='Enter your email'
-              />
+                <TextInput 
+                  style={styles.input}
+                  autoCompleteType='email'
+                  autoFocus={true}
+                  keyboardType='email-address'
+                  value={email}
+                  onChangeText={input => setEmail(input)}
+                  placeholderTextColor='#8E8F95'
+                  placeholder='Enter your email'
+                />
               <Text style={styles.inputTitle}>Password:</Text>
               <TextInput 
                 style={styles.input}
@@ -70,7 +74,17 @@ export default function TabOneScreen() {
                 placeholderTextColor='#8E8F95'
                 placeholder='At least 6 characters'
               />
-              <MainBtn onPress={() => setShowModal(!showModal)} bgColor='#4A9D64' txtColor='white' title='DONE' spaceTop={40} />
+              <Text style={{alignSelf:'center',marginTop:6, color:'white', fontSize:16}}>By continuing, you agree to the</Text>
+              <View style={{alignSelf:'center', flexDirection:'row'}}>
+              <TouchableOpacity onPress={handleTermsOfUse}>
+                <Text style={{color:'#96CDE8', fontSize:16}}>Terms of Use</Text>
+              </TouchableOpacity>
+              <Text style={[{color:'white', fontSize:16}]}> and </Text>
+              <TouchableOpacity onPress={handlePrivacyPolicy}>
+                <Text style={{color:'#96CDE8', fontSize:16}}>Privacy Policy.</Text>
+              </TouchableOpacity>
+              </View>
+              <MainBtn onPress={() => setShowModal(!showModal)} bgColor='#4A9D64' txtColor='white' title='DONE' spaceTop={15} />
               </ScrollView>
             </View>
             }
@@ -84,7 +98,6 @@ export default function TabOneScreen() {
               autoCompleteType='email'
               autoFocus={true}
               keyboardType='email-address'
-              onBlur={() => setInputBg('green')}
               value={email}
               onChangeText={input => setEmail(input)}
               placeholderTextColor='#8E8F95'
@@ -109,6 +122,17 @@ export default function TabOneScreen() {
   )
 }
 
+function handleTermsOfUse() {
+  WebBrowser.openBrowserAsync(
+    'https://food-e-call.com'
+  )
+}
+function handlePrivacyPolicy() {
+  WebBrowser.openBrowserAsync(
+    'https://food-e-call.com/admin'
+  )
+}
+
 const styles = StyleSheet.create({
   logo: {
     width: 150,
@@ -120,8 +144,7 @@ const styles = StyleSheet.create({
   miniLogo: {
     width: 80,
     height: 80,
-    alignSelf: 'center',
-    marginTop: '5%'
+    alignSelf:'center'
   },
   txt: {
     color: 'white',
@@ -159,6 +182,17 @@ const styles = StyleSheet.create({
     borderRadius:6,
     fontWeight: 'bold',
   },
+  closeBtn: {
+    backgroundColor:'white', 
+    alignSelf:'flex-end', 
+    justifyContent:'center',
+    height: 40, 
+    width:40, 
+    borderRadius:80, 
+    marginBottom:-40, 
+    marginRight:10, 
+    marginTop:10
+  }
 })
 
 
