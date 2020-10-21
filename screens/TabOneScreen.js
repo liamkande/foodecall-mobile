@@ -47,7 +47,7 @@ export default function TabOneScreen() {
                   name='close'
                   color='#F92B8C'
                   style={{alignSelf:'center'}}
-                  size={40}
+                  size={35}
                 />
               </TouchableOpacity>
               <Image style={styles.miniLogo} source={logo} />
@@ -64,7 +64,7 @@ export default function TabOneScreen() {
                   placeholderTextColor='#8E8F95'
                   placeholder='Enter your email'
                 />
-              <Text style={styles.inputTitle}>Password:</Text>
+                <Text style={styles.inputTitle}>Password:</Text>
               <TextInput 
                 style={styles.input}
                 autoCompleteType='password'
