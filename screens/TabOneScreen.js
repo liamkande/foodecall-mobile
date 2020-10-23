@@ -1,5 +1,7 @@
 import * as WebBrowser from 'expo-web-browser'
 import * as React from 'react'
+import firebase from 'firebase'
+import db from '../config/firebase'
 import {View, Image, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import MainView from '../components/mainView'
@@ -13,6 +15,7 @@ export default function TabOneScreen() {
   const [modalType, setModalType] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+
   
   const handleSignUp = async () => {
     setModalType('signUp')
@@ -21,6 +24,24 @@ export default function TabOneScreen() {
   const handleSignIn = async () => {
     setModalType('signIn')
     setShowModal(true)
+  }
+
+  const signup = async () => {
+    try {
+      const response = await firebase.auth().createUserWithEmailAndPassword(email, password)
+      const user = {
+        uid: response.user.uid,
+        email: email,
+        createdAt: new Date(),
+        lastActive: new Date(),       
+      }
+      if(response.user.uid) {
+        db.collection('users').doc(response.user.uid).set(user)
+        setShowModal(!showModal)      
+      }
+    } catch (e) {
+			alert(e)
+		}
   }
 
   return (
@@ -59,7 +80,7 @@ export default function TabOneScreen() {
                   autoCompleteType='email'
                   autoFocus={true}
                   keyboardType='email-address'
-                  value={email}
+                  value={email.trim()}
                   onChangeText={input => setEmail(input)}
                   placeholderTextColor='#8E8F95'
                   placeholder='Enter your email'
@@ -69,7 +90,7 @@ export default function TabOneScreen() {
                 style={styles.input}
                 autoCompleteType='password'
                 secureTextEntry={true}
-                value={password}
+                value={password.trim()}
                 onChangeText={input => setPassword(input)}
                 placeholderTextColor='#8E8F95'
                 placeholder='At least 6 characters'
@@ -84,7 +105,7 @@ export default function TabOneScreen() {
                 <Text style={{color:'#96CDE8', fontSize:16}}>Privacy Policy.</Text>
               </TouchableOpacity>
               </View>
-              <MainBtn onPress={() => setShowModal(!showModal)} bgColor='#4A9D64' txtColor='white' title='DONE' spaceTop={15} />
+              <MainBtn onPress={signup} bgColor='#4A9D64' txtColor='white' title='DONE' spaceTop={15} />
               </ScrollView>
             </View>
             }
