@@ -15,11 +15,13 @@ export default function TabOneScreen() {
   const [modalType, setModalType] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [activityType, setActivityType] = React.useState(null)
 
   
   const handleSignUp = async () => {
     setModalType('signUp')
     setShowModal(true)
+    setActivityType('signUp')
   }
   const handleSignIn = async () => {
     setModalType('signIn')
@@ -33,7 +35,10 @@ export default function TabOneScreen() {
         uid: response.user.uid,
         email: email,
         createdAt: new Date(),
-        lastActive: new Date(),       
+        lastActive:{
+                date: new Date(),
+                activityType: activityType
+        }        
       }
       if(response.user.uid) {
         db.collection('users').doc(response.user.uid).set(user)
