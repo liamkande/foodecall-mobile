@@ -15,7 +15,11 @@ export default function TabOneScreen() {
   const [modalType, setModalType] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [userId, setUserId] = React.useState(null)
   const [activityType, setActivityType] = React.useState(null)
+
+  const [newEmail, setNewEmail] =React.useState('')
+  
 
   
   const handleSignUp = async () => {
@@ -31,6 +35,7 @@ export default function TabOneScreen() {
   const signup = async () => {
     try {
       const response = await firebase.auth().createUserWithEmailAndPassword(email, password)
+      await firebase.auth().currentUser.sendEmailVerification()
       const user = {
         uid: response.user.uid,
         email: email,
@@ -42,7 +47,68 @@ export default function TabOneScreen() {
       }
       if(response.user.uid) {
         db.collection('users').doc(response.user.uid).set(user)
-        setShowModal(!showModal)      
+        setShowModal(!showModal)   
+        setUserId(response.user.uid)     
+      }
+    } catch (e) {
+			alert(e)
+		}
+  }
+
+
+  const signIn = async () => {
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password)
+      await firebase.auth().currentUser.reload()
+			const uid = await firebase.auth().currentUser.uid
+      const verified = await firebase.auth().currentUser.emailVerified
+
+      if(uid) {
+        const user = await db.collection('users').doc(uid).get()
+        alert(`Welcome: ${user.data().email}`)  
+      //setShowModal(!showModal) 
+      setUserId(uid)   
+      } 
+    } catch (e) {
+			alert(e)
+		}
+  }
+
+  const resetPassword = async () => {
+    try {
+      await firebase.auth().sendPasswordResetEmail(email)
+      alert(`A reset link has been sent to ${email} Please reset your password and try again...`)
+    } catch (e) {
+			alert(e)
+		}
+  }
+
+
+  const updateEmail = async () => {
+    try {
+      const uid = await firebase.auth().currentUser.uid
+      const user = await db.collection('users').doc(uid).get()
+      await firebase.auth().currentUser.updateEmail(newEmail)
+      await db.collection('users').doc(uid).update({
+        email:newEmail
+      })
+      await firebase.auth().currentUser.reload()
+      await firebase.auth().currentUser.sendEmailVerification()
+      alert(`We've updated your email address from: ${user.data().email} to: ${newEmail}`)
+    } catch (e) {
+			alert(e)
+		}
+  }
+
+  const verification = async () => {
+    try {
+      await firebase.auth().currentUser.reload()
+      const verified = await firebase.auth().currentUser.emailVerified
+      if(verified) {
+        alert('Yay! your email has been verified')
+      } else {
+        await firebase.auth().currentUser.sendEmailVerification()
+        alert('sorry! Please make sure you verify your email.')
       }
     } catch (e) {
 			alert(e)
@@ -116,32 +182,82 @@ export default function TabOneScreen() {
             }
             { modalType == 'signIn' &&
             <View style={{justifyContent:'center',}}>
+            <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(!showModal)}>
+              <FontAwesome
+                name='close'
+                color='#F92B8C'
+                style={{alignSelf:'center'}}
+                size={35}
+              />
+            </TouchableOpacity>
             <Image style={styles.miniLogo} source={logo} />
             <ScrollView style={{width:'80%', height:'100%', alignSelf:'center'}}>
               <Text style={styles.inputTitle}>Email:</Text>
+              <TextInput 
+                style={styles.input}
+                autoCompleteType='email'
+                autoFocus={true}
+                keyboardType='email-address'
+                value={email.trim()}
+                onChangeText={input => setEmail(input)}
+                placeholderTextColor='#8E8F95'
+                placeholder='Enter your email'
+              />
+              <Text style={styles.inputTitle}>Password:</Text>
+            <TextInput 
+              style={styles.input}
+              autoCompleteType='password'
+              secureTextEntry={true}
+              value={password.trim()}
+              onChangeText={input => setPassword(input)}
+              placeholderTextColor='#8E8F95'
+              placeholder='At least 6 characters'
+            />
+
             <TextInput 
               style={styles.input}
               autoCompleteType='email'
               autoFocus={true}
               keyboardType='email-address'
-              value={email}
-              onChangeText={input => setEmail(input)}
+              value={newEmail.trim()}
+              onChangeText={input => setNewEmail(input)}
               placeholderTextColor='#8E8F95'
-              placeholder='Email'
-            />
-            <Text style={styles.inputTitle}>Password:</Text>
-            <TextInput 
-              style={styles.input}
-              autoCompleteType='password'
-              secureTextEntry={true}
-              value={password}
-              onChangeText={input => setPassword(input)}
-              placeholderTextColor='#8E8F95'
-              placeholder='•••••••'
-            />
-            <MainBtn onPress={() => setShowModal(!showModal)} bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
+              placeholder='Update email'
+              />
+
+              <TouchableOpacity onPress={resetPassword}>
+                <Text style={{alignSelf:'center', color:'#FF4F6B', fontSize:18, marginTop:10,}}>Forgot Password?</Text>
+              </TouchableOpacity>
+
+ 
+
+            <TouchableOpacity onPress={updateEmail}>
+              <Text style={{alignSelf:'center', color:'yellow', fontSize:18, marginTop:10,}}>Update Email!</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={verification}>
+              <Text style={{alignSelf:'center', color:'orange', fontSize:18, marginTop:10,}}>verification Check</Text>
+            </TouchableOpacity>
+
+            <Text style={{alignSelf:'center',marginTop:6, color:'white', fontSize:16}}>By continuing, you agree to the</Text>
+            <View style={{alignSelf:'center', flexDirection:'row'}}>
+            <TouchableOpacity onPress={handleTermsOfUse}>
+              <Text style={{color:'#96CDE8', fontSize:16}}>Terms of Use</Text>
+            </TouchableOpacity>
+            <Text style={[{color:'white', fontSize:16}]}> and </Text>
+            <TouchableOpacity onPress={handlePrivacyPolicy}>
+              <Text style={{color:'#96CDE8', fontSize:16}}>Privacy Policy.</Text>
+            </TouchableOpacity>
+
+            </View>
+
+            <MainBtn onPress={signIn} bgColor='white' txtColor='#FF4F6B' title='DONE' spaceTop={15} />
             </ScrollView>
           </View>
+
+
+
+
             }
           </ModalView>
       </MainView>
