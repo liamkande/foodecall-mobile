@@ -15,8 +15,12 @@ export default function TabOneScreen() {
   const [modalType, setModalType] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
-  const [userId, setUserId] = React.useState(null)
+  const [phone, setPhone] = React.useState('')
+  const [phoneCode, setPhoneCode] = React.useState('')
+
   const [activityType, setActivityType] = React.useState(null)
+
+  const [showCodeInput, setShowCodeInput] = React.useState(null)
 
   const [newEmail, setNewEmail] =React.useState('')
   
@@ -31,6 +35,13 @@ export default function TabOneScreen() {
     setModalType('signIn')
     setShowModal(true)
   }
+
+  const handlePhoneAuth = async () => {
+    setModalType('phoneAuth')
+    setShowModal(true)
+    setShowCodeInput(null)
+  }
+
 
   const signup = async () => {
     try {
@@ -48,7 +59,7 @@ export default function TabOneScreen() {
       if(response.user.uid) {
         db.collection('users').doc(response.user.uid).set(user)
         setShowModal(!showModal)   
-        setUserId(response.user.uid)     
+           
       }
     } catch (e) {
 			alert(e)
@@ -67,7 +78,7 @@ export default function TabOneScreen() {
         const user = await db.collection('users').doc(uid).get()
         alert(`Welcome: ${user.data().email}`)  
       //setShowModal(!showModal) 
-      setUserId(uid)   
+      
       } 
     } catch (e) {
 			alert(e)
@@ -128,10 +139,59 @@ export default function TabOneScreen() {
           </Text> 
         </View>
         <View style={{height:'20%', marginBottom:'10%'}}>
-          <MainBtn onPress={handleSignUp} bgColor='#FF4F6B' txtColor='white' title='Get Started'/>
+          <MainBtn onPress={handlePhoneAuth} bgColor='purple' txtColor='white' title='Phone Auth'/>
+          <MainBtn onPress={handleSignUp} bgColor='#FF4F6B' txtColor='white' title='Get Started' spaceTop={10}/>
           <MainBtn onPress={handleSignIn}  bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
           </View>
           <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
+            { modalType == 'phoneAuth' &&
+            <View style={{justifyContent:'center',}}>
+            <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(!showModal)}>
+              <FontAwesome
+                name='close'
+                color='#F92B8C'
+                style={{alignSelf:'center'}}
+                size={35}
+              />
+            </TouchableOpacity>
+            <Image style={styles.miniLogo} source={logo} />
+            <ScrollView style={{width:'80%', height:'100%', alignSelf:'center'}}>
+              
+              { !showCodeInput &&
+              <View>
+              <Text style={styles.inputTitle}>Phone Number:</Text>
+              <TextInput 
+                style={styles.input}
+                autoCompleteType='tel'
+                autoFocus={true}
+                keyboardType='phone-pad'
+                value={phone.trim()}
+                onChangeText={input => setPhone(input)}
+                placeholderTextColor='#8E8F95'
+                placeholder='Enter your Phone Number'
+              />
+               <MainBtn onPress={() => phone ? setShowCodeInput('codeInput') : alert('Please enter phone number before continuing!') } bgColor='#4A9D64' txtColor='white' title='NEXT' spaceTop={15} />
+              </View>
+              }
+              { showCodeInput == 'codeInput' &&
+              <View>
+                <Text style={styles.inputTitle}>A verification code was sent to {phone} </Text>
+                <Text style={styles.inputTitle}>Verification code:</Text>
+                <TextInput 
+                  style={styles.input}
+                  keyboardType='numeric'
+                  value={phoneCode.trim()}
+                  onChangeText={input => setPhoneCode(input)}
+                  placeholderTextColor='#8E8F95'
+                  placeholder='Enter Verification code'
+                />
+                <MainBtn onPress={() => phoneCode ? setShowCodeInput(null) : alert('Invalid Code')} bgColor='#4A9D64' txtColor='white' title='CONTINUE' spaceTop={15} />
+              </View>
+              }
+            </ScrollView>
+          </View>
+            }
+            
             { modalType == 'signUp' &&
             <View style={{justifyContent:'center',}}>
               <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(!showModal)}>
