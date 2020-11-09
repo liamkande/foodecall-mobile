@@ -1,14 +1,43 @@
 import * as WebBrowser from 'expo-web-browser'
-import * as React from 'react'
-import firebase from 'firebase'
-import db from '../config/firebase'
-import {View, Image, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
+import React, { useState } from 'react'
+import * as firebase from "firebase"
+import {View, Image, Text, TextInput, ScrollView, 
+  TouchableOpacity, StyleSheet, Button, Alert,
+  ActivityIndicator,
+  Platform } from 'react-native'
+import * as FirebaseRecaptcha from "expo-firebase-recaptcha"
 import { FontAwesome } from '@expo/vector-icons'
 import MainView from '../components/mainView'
 import MainBtn from '../components/mainBtn'
 import ModalView from '../components/modalView'
 
 const logo = require('../assets/images/logoCircle.png')
+
+const FIREBASE_CONFIG: any = {
+  /*apiKey: "api-key",
+  authDomain: "project-id.firebaseapp.com",
+  databaseURL: "https://project-id.firebaseio.com",
+  projectId: "project-id",
+  storageBucket: "project-id.appspot.com",
+  messagingSenderId: "sender-id",
+  appId: "app-id",
+  measurementId: "G-measurement-id",*/
+
+  apiKey: "AIzaSyAvcRWynRCX82hpFw4BaUftV54LjQHDXSI",
+  authDomain: "food-e-call-nativeapp.firebaseapp.com",
+  databaseURL: "https://food-e-call-nativeapp.firebaseio.com",
+  projectId: "food-e-call-nativeapp",
+  storageBucket: "food-e-call-nativeapp.appspot.com",
+  messagingSenderId: "920243376910"
+}
+
+try {
+  if (FIREBASE_CONFIG.apiKey) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }
+} catch (err) {
+  // ignore app already initialized error on snack
+}
 
 export default function TabOneScreen() {
   const [showModal, setShowModal] = React.useState(false)
@@ -25,7 +54,53 @@ export default function TabOneScreen() {
   const [newEmail, setNewEmail] =React.useState('')
   
 
+
+  const recaptchaVerifier = React.useRef(null);
+  const verificationCodeTextInput = React.useRef(null);
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [verificationId, setVerificationId] = React.useState("");
+  const [verifyError, setVerifyError] = React.useState();
+  const [verifyInProgress, setVerifyInProgress] = React.useState(false);
+  const [verificationCode, setVerificationCode] = React.useState("");
+const [confirmError, setConfirmError] = React.useState();
+ const [confirmInProgress, setConfirmInProgress] = React.useState(false);
+  const isConfigValid = !!FIREBASE_CONFIG.apiKey;
+
+
+
+
+
+
+  // const [confirm, setConfirm] = useState(null)
   
+  // const [code, setCode] = useState('')
+
+  
+  // const signInWithPhoneNumber = async (phoneNumber, code) => {
+  //   const confirmation = await firebase.auth().signInWithPhoneNumber(phoneNumber, code)
+  //   setConfirm(confirmation)
+  
+  // }
+
+
+
+  // const confirmCode = async () => {
+  //   try {
+  //     await confirm.confirm(code);
+  //   } catch (error) {
+  //     console.log('Invalid code.');
+  //   }
+  // }
+
+  // if (!confirm) {
+  //   return (
+  //     <Button
+  //       title="Phone Number Sign In"
+  //       onPress={() => signInWithPhoneNumber('+1 424-333-6901', '123456')}
+  //     />
+  //   );
+  // }
+
   const handleSignUp = async () => {
     setModalType('signUp')
     setShowModal(true)
@@ -54,10 +129,12 @@ export default function TabOneScreen() {
         lastActive:{
                 date: new Date(),
                 activityType: activityType
-        }        
+        },
+        phone:'', 
+        emailVerified:false,       
       }
       if(response.user.uid) {
-        db.collection('users').doc(response.user.uid).set(user)
+        firebase.firestore().collection('users').doc(response.user.uid).set(user)
         setShowModal(!showModal)   
            
       }
@@ -75,10 +152,9 @@ export default function TabOneScreen() {
       const verified = await firebase.auth().currentUser.emailVerified
 
       if(uid) {
-        const user = await db.collection('users').doc(uid).get()
+        const user = await firebase.firestore().collection('users').doc(uid).get()
         alert(`Welcome: ${user.data().email}`)  
       //setShowModal(!showModal) 
-      
       } 
     } catch (e) {
 			alert(e)
@@ -98,27 +174,39 @@ export default function TabOneScreen() {
   const updateEmail = async () => {
     try {
       const uid = await firebase.auth().currentUser.uid
-      const user = await db.collection('users').doc(uid).get()
+      const user = await firebase.firestore().collection('users').doc(uid).get()
       await firebase.auth().currentUser.updateEmail(newEmail)
-      await db.collection('users').doc(uid).update({
-        email:newEmail
+      await firebase.firestore().collection('users').doc(uid).update({
+        email:newEmail,
+        emailVerified:false
+
       })
       await firebase.auth().currentUser.reload()
       await firebase.auth().currentUser.sendEmailVerification()
-      alert(`We've updated your email address from: ${user.data().email} to: ${newEmail}`)
+      alert(`We've updated your email address from: ${user.data().email} to: ${newEmail}. Please sign back in!`)
+      firebase.auth().signOut()
     } catch (e) {
 			alert(e)
 		}
   }
 
-  const verification = async () => {
+  const emailVerification = async () => {
     try {
       await firebase.auth().currentUser.reload()
+      const uid = await firebase.auth().currentUser.uid
       const verified = await firebase.auth().currentUser.emailVerified
+
       if(verified) {
+          await firebase.firestore().collection('users').doc(uid).update({
+          emailVerified:true
+        })
         alert('Yay! your email has been verified')
+
       } else {
         await firebase.auth().currentUser.sendEmailVerification()
+        await firebase.firestore().collection('users').doc(uid).update({
+          emailVerified:false
+        })
         alert('sorry! Please make sure you verify your email.')
       }
     } catch (e) {
@@ -126,8 +214,23 @@ export default function TabOneScreen() {
 		}
   }
 
+
+
+  const updatePhone = async () => {
+    try {
+      const uid = await firebase.auth().currentUser.uid      
+      await firebase.firestore().collection('users').doc(uid).update({
+        phone:phoneNumber
+      })
+      await firebase.auth().currentUser.reload()
+    } catch (e) {
+			alert(e)
+		}
+  }
+
   return (
       <MainView>
+
         <View style={{height:'70%'}}>
           <Image style={styles.logo} source={logo} />
           <Text style={styles.txt}>The food delivery app, designed</Text>
@@ -146,6 +249,10 @@ export default function TabOneScreen() {
           <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
             { modalType == 'phoneAuth' &&
             <View style={{justifyContent:'center',}}>
+                      <FirebaseRecaptcha.FirebaseRecaptchaVerifierModal
+          ref={recaptchaVerifier}
+          firebaseConfig={FIREBASE_CONFIG}
+        />
             <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(!showModal)}>
               <FontAwesome
                 name='close'
@@ -157,22 +264,101 @@ export default function TabOneScreen() {
             <Image style={styles.miniLogo} source={logo} />
             <ScrollView style={{width:'80%', height:'100%', alignSelf:'center'}}>
               
-              { !showCodeInput &&
+            
               <View>
               <Text style={styles.inputTitle}>Phone Number:</Text>
-              <TextInput 
+              <TextInput
                 style={styles.input}
-                autoCompleteType='tel'
-                autoFocus={true}
-                keyboardType='phone-pad'
-                value={phone.trim()}
-                onChangeText={input => setPhone(input)}
-                placeholderTextColor='#8E8F95'
-                placeholder='Enter your Phone Number'
+                autoFocus={isConfigValid}
+                autoCompleteType="tel"
+                keyboardType="phone-pad"
+                textContentType="telephoneNumber"
+                placeholder="+1 999 999 9999"
+                editable={!verificationId}
+                onChangeText={(phoneNumber: string) => setPhoneNumber(phoneNumber)}
+                />
+
+              <Button
+                title={`${verificationId ? "Resend" : "Send"} Verification Code`}
+                disabled={!phoneNumber}
+                onPress={async () => {
+                  const phoneProvider = new firebase.auth.PhoneAuthProvider();
+                  try {
+                    setVerifyError(undefined);
+                    setVerifyInProgress(true);
+                    setVerificationId("");
+                    const verificationId = await phoneProvider.verifyPhoneNumber(
+                      phoneNumber,
+                      // @ts-ignore
+                      recaptchaVerifier.current
+                    );
+                    setVerifyInProgress(false);
+                    setVerificationId(verificationId);
+                    verificationCodeTextInput.current?.focus();
+                  } catch (err) {
+                    setVerifyError(err);
+                    setVerifyInProgress(false);
+                  }
+                }}
               />
-               <MainBtn onPress={() => phone ? setShowCodeInput('codeInput') : alert('Please enter phone number before continuing!') } bgColor='#4A9D64' txtColor='white' title='NEXT' spaceTop={15} />
+
+              {verifyError && (
+                <Text style={styles.error}>{`Error: ${verifyError.message}`}</Text>
+              )}
+        {verifyInProgress && <ActivityIndicator style={styles.loader} />}
+        {verificationId ? (
+          <Text style={styles.success}>
+            A verification code has been sent to your phone
+          </Text>
+        ) : undefined}
+        <Text style={styles.inputTitle}>Enter verification code</Text>
+        <TextInput
+          ref={verificationCodeTextInput}
+          style={styles.input}
+          editable={!!verificationId}
+          placeholder="123456"
+          onChangeText={(verificationCode: string) =>
+            setVerificationCode(verificationCode)
+          }
+        />
+
+        <Button
+          title="Confirm Verification Code"
+          disabled={!verificationCode}
+          onPress={async () => {
+            try {
+              setConfirmError(undefined);
+              setConfirmInProgress(true);
+              // const credential = firebase.auth.PhoneAuthProvider.credential(
+              //   verificationId,
+              //   verificationCode
+              // );
+              // const authResult = await firebase
+              //   .auth()
+              //   .signInWithCredential(credential);
+              setConfirmInProgress(false);
+              setVerificationId("");
+              setVerificationCode("");
+              verificationCodeTextInput.current?.clear();
+              updatePhone()
+              // Alert.alert("Phone authentication successful!");
+              setShowModal(!showModal) 
+             
+            } catch (err) {
+              setConfirmError(err);
+              setConfirmInProgress(false);
+            }
+          }}
+        />
+        {confirmError && (
+          <Text style={styles.error}>{`Error: ${confirmError.message}`}</Text>
+        )}
+        {confirmInProgress && <ActivityIndicator style={styles.loader} />}
+
+
+               {/* <MainBtn onPress={() => phone ? setShowCodeInput('codeInput') : alert('Please enter phone number before continuing!') } bgColor='#4A9D64' txtColor='white' title='NEXT' spaceTop={15} /> */}
               </View>
-              }
+              
               { showCodeInput == 'codeInput' &&
               <View>
                 <Text style={styles.inputTitle}>A verification code was sent to {phone} </Text>
@@ -180,6 +366,7 @@ export default function TabOneScreen() {
                 <TextInput 
                   style={styles.input}
                   keyboardType='numeric'
+                  autoFocus={true}
                   value={phoneCode.trim()}
                   onChangeText={input => setPhoneCode(input)}
                   placeholderTextColor='#8E8F95'
@@ -295,7 +482,7 @@ export default function TabOneScreen() {
               <Text style={{alignSelf:'center', color:'yellow', fontSize:18, marginTop:10,}}>Update Email!</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={verification}>
+            <TouchableOpacity onPress={emailVerification}>
               <Text style={{alignSelf:'center', color:'orange', fontSize:18, marginTop:10,}}>verification Check</Text>
             </TouchableOpacity>
 
@@ -312,6 +499,8 @@ export default function TabOneScreen() {
             </View>
 
             <MainBtn onPress={signIn} bgColor='white' txtColor='#FF4F6B' title='DONE' spaceTop={15} />
+            <MainBtn onPress={() => firebase.auth().signOut()} bgColor='white' txtColor='#FF4F6B' title='Sign Out' spaceTop={15} />
+
             </ScrollView>
           </View>
 
@@ -394,7 +583,12 @@ const styles = StyleSheet.create({
     marginBottom:-40, 
     marginRight:10, 
     marginTop:10
-  }
+  },
+  error: {
+    marginTop: 10,
+    fontWeight: "bold",
+    color: "red",
+  },
 })
 
 
