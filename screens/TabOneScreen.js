@@ -23,12 +23,14 @@ const FIREBASE_CONFIG: any = {
   appId: "app-id",
   measurementId: "G-measurement-id",*/
 
-  apiKey: "AIzaSyAvcRWynRCX82hpFw4BaUftV54LjQHDXSI",
-  authDomain: "food-e-call-nativeapp.firebaseapp.com",
-  databaseURL: "https://food-e-call-nativeapp.firebaseio.com",
-  projectId: "food-e-call-nativeapp",
-  storageBucket: "food-e-call-nativeapp.appspot.com",
-  messagingSenderId: "920243376910"
+  apiKey: "AIzaSyB-vGBbYDQ6thqBcJlThhb2IweLgFR4dxo",
+  authDomain: "food-e-call-app.firebaseapp.com",
+  databaseURL: "https://food-e-call-app.firebaseio.com",
+  projectId: "food-e-call-app",
+  storageBucket: "food-e-call-app.appspot.com",
+  messagingSenderId: "11077193153",
+  appId: "1:11077193153:web:dc3cc5ec5fec1f87473340",
+  measurementId: "G-K9Y40B9PGL"
 }
 
 try {
