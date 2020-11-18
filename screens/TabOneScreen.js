@@ -14,15 +14,7 @@ import ModalView from '../components/modalView'
 const logo = require('../assets/images/logoCircle.png')
 
 const FIREBASE_CONFIG: any = {
-  /*apiKey: "api-key",
-  authDomain: "project-id.firebaseapp.com",
-  databaseURL: "https://project-id.firebaseio.com",
-  projectId: "project-id",
-  storageBucket: "project-id.appspot.com",
-  messagingSenderId: "sender-id",
-  appId: "app-id",
-  measurementId: "G-measurement-id",*/
-
+ 
   apiKey: "AIzaSyB-vGBbYDQ6thqBcJlThhb2IweLgFR4dxo",
   authDomain: "food-e-call-app.firebaseapp.com",
   databaseURL: "https://food-e-call-app.firebaseio.com",
@@ -41,7 +33,7 @@ try {
   // ignore app already initialized error on snack
 }
 
-export default function TabOneScreen() {
+export default function TabOneScreen({ navigation }) {
   const [showModal, setShowModal] = React.useState(false)
   const [modalType, setModalType] = React.useState('')
   const [email, setEmail] = React.useState('')
@@ -137,14 +129,13 @@ const [confirmError, setConfirmError] = React.useState();
       }
       if(response.user.uid) {
         firebase.firestore().collection('users').doc(response.user.uid).set(user)
-        setShowModal(!showModal)   
-           
+        setShowModal(!showModal)
+        navigation.navigate('Locator')      
       }
     } catch (e) {
 			alert(e)
 		}
   }
-
 
   const signIn = async () => {
     try {
@@ -156,7 +147,8 @@ const [confirmError, setConfirmError] = React.useState();
       if(uid) {
         const user = await firebase.firestore().collection('users').doc(uid).get()
         alert(`Welcome: ${user.data().email}`)  
-      //setShowModal(!showModal) 
+        setShowModal(!showModal)
+        navigation.navigate('Locator')  
       } 
     } catch (e) {
 			alert(e)
@@ -244,16 +236,16 @@ const [confirmError, setConfirmError] = React.useState();
           </Text> 
         </View>
         <View style={{height:'20%', marginBottom:'10%'}}>
-          <MainBtn onPress={handlePhoneAuth} bgColor='purple' txtColor='white' title='Phone Auth'/>
+          {/* <MainBtn onPress={handlePhoneAuth} bgColor='purple' txtColor='white' title='Phone Auth'/> */}
           <MainBtn onPress={handleSignUp} bgColor='#FF4F6B' txtColor='white' title='Get Started' spaceTop={10}/>
           <MainBtn onPress={handleSignIn}  bgColor='white' txtColor='#FF4F6B' title='Sign In' spaceTop={40} />
           </View>
           <ModalView  modalWidth='100%' innerHeight='100%' showModal={showModal} type={modalType}>
             { modalType == 'phoneAuth' &&
             <View style={{justifyContent:'center',}}>
-                      <FirebaseRecaptcha.FirebaseRecaptchaVerifierModal
-          ref={recaptchaVerifier}
-          firebaseConfig={FIREBASE_CONFIG}
+              <FirebaseRecaptcha.FirebaseRecaptchaVerifierModal
+              ref={recaptchaVerifier}
+              firebaseConfig={FIREBASE_CONFIG}
         />
             <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(!showModal)}>
               <FontAwesome
@@ -463,7 +455,7 @@ const [confirmError, setConfirmError] = React.useState();
               placeholder='At least 6 characters'
             />
 
-            <TextInput 
+            {/* <TextInput 
               style={styles.input}
               autoCompleteType='email'
               autoFocus={true}
@@ -472,7 +464,7 @@ const [confirmError, setConfirmError] = React.useState();
               onChangeText={input => setNewEmail(input)}
               placeholderTextColor='#8E8F95'
               placeholder='Update email'
-              />
+              /> */}
 
               <TouchableOpacity onPress={resetPassword}>
                 <Text style={{alignSelf:'center', color:'#FF4F6B', fontSize:18, marginTop:10,}}>Forgot Password?</Text>
@@ -480,13 +472,13 @@ const [confirmError, setConfirmError] = React.useState();
 
  
 
-            <TouchableOpacity onPress={updateEmail}>
+            {/* <TouchableOpacity onPress={updateEmail}>
               <Text style={{alignSelf:'center', color:'yellow', fontSize:18, marginTop:10,}}>Update Email!</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <TouchableOpacity onPress={emailVerification}>
+            {/* <TouchableOpacity onPress={emailVerification}>
               <Text style={{alignSelf:'center', color:'orange', fontSize:18, marginTop:10,}}>verification Check</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <Text style={{alignSelf:'center',marginTop:6, color:'white', fontSize:16}}>By continuing, you agree to the</Text>
             <View style={{alignSelf:'center', flexDirection:'row'}}>
@@ -501,7 +493,7 @@ const [confirmError, setConfirmError] = React.useState();
             </View>
 
             <MainBtn onPress={signIn} bgColor='white' txtColor='#FF4F6B' title='DONE' spaceTop={15} />
-            <MainBtn onPress={() => firebase.auth().signOut()} bgColor='white' txtColor='#FF4F6B' title='Sign Out' spaceTop={15} />
+            {/* <MainBtn onPress={() => firebase.auth().signOut()} bgColor='white' txtColor='#FF4F6B' title='Sign Out' spaceTop={15} /> */}
 
             </ScrollView>
           </View>
